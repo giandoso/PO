@@ -5,7 +5,7 @@ import ilog.concert.IloLinearNumExpr;
 import ilog.concert.IloNumVar;
 import ilog.cplex.IloCplex;
 
-public class xpto {
+public class Xpto {
 
     
     /**
