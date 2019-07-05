@@ -18,7 +18,7 @@ public class Reader {
 
     File f;
     Scanner s;
-    ArrayList<String[]> l = new ArrayList<>();
+    ArrayList<int[]> l = new ArrayList<>();
 
     public Reader(String path) throws FileNotFoundException {
         this.f = new File(path);
@@ -28,12 +28,11 @@ public class Reader {
         while(s.hasNext()){
             String line = this.s.next();
             String[] split_line = line.split(",");
-            l.add(split_line);
-        }
-        
-        
-        for(String[] arr : l){
-            System.out.println(Arrays.toString(arr));
+            int[] arr = new int[3];
+            arr[0] = Integer.parseInt(split_line[0]);
+            arr[1] = Integer.parseInt(split_line[1]);
+            arr[2] = Integer.parseInt(split_line[2]);
+            l.add(arr);
         }
     }
 
