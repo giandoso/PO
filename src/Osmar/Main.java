@@ -10,14 +10,15 @@ public class Main {
         try {
             IloCplex model = new IloCplex();
             
-            // FO
-            IloLinearNumExpr z = model.linearNumExpr();
+            // variaveis de decisão
             IloNumVar x = model.numVar(0, 999);
             IloNumVar y = model.numVar(0, 999);
+            
+            // FO
+            IloLinearNumExpr z = model.linearNumExpr();
             z.addTerm(300, x);
             z.addTerm(280, y);
             model.addMaximize(z);
-            
             
             // Custo :=  70x + 50y <= 350
             IloLinearNumExpr custo = model.linearNumExpr();
