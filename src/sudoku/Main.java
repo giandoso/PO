@@ -31,7 +31,8 @@ public class Main {
                 }
             }
         }
-        for (int[] p : r.l) {
+        // adiciona restrições (vem do arquivo data.input)
+        for (int[] p : r.restricoes) {
             model.addEq(x[p[0]][p[1]][p[2]], 1);
         }
 

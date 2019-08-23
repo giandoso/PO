@@ -30,20 +30,20 @@ public class MontaHorarios {
 
         IloCplex model = new IloCplex(); //crio o modelo
         IloLinearNumExpr z = model.linearNumExpr();//criando a expressao z de maximizacao ou minimização
-        IloNumVar[][][][] matrizModelo = new IloNumVar[qtdTurmas][qtdHorarios][qtdDias][qtdProf];
+        IloNumVar[][][][] x = new IloNumVar[qtdDias][qtdHorarios][qtdTurmas][qtdProf];
 
         //criando as matrizes 3D para cada turma
         for (int t = 0; t < qtdTurmas; t++) {
             for (int h = 0; h < qtdHorarios; h++) {
                 for (int d = 0; d < qtdDias; d++) {
                     for (int p = 0; p < qtdProf; p++) {
-                        matrizModelo[t][h][d][p] = model.intVar(0, 1);
-                        z.addTerm(1, matrizModelo[t][h][d][p]);
+                        x[d][h][t][p] = model.intVar(0, 1);
+                        z.addTerm(1, x[d][h][t][p]);
                     }
                 }
             }
         }
-        
+
         model.addMaximize(z);
 
         //Restrição das inviabilidades
@@ -52,7 +52,7 @@ public class MontaHorarios {
                 for (int p = 0; p < qtdProf; p++) {
                     if (inviabilidades[h][d][p]) {
                         for (int t = 0; t < qtdTurmas; t++) {
-                            model.addEq(matrizModelo[t][h][d][p], 0);
+                            model.addEq(x[d][h][t][p], 0);
                         }
                     }
                 }
@@ -66,7 +66,7 @@ public class MontaHorarios {
                 IloLinearNumExpr somaAulas = model.linearNumExpr();
                 for (int h = 0; h < qtdHorarios; h++) {
                     for (int d = 0; d < qtdDias; d++) {
-                        somaAulas.addTerm(1, matrizModelo[t][h][d][p]);
+                        somaAulas.addTerm(1, x[d][h][t][p]);
                     }
                 }
                 model.addEq(somaAulas, qtdAulas);
@@ -79,7 +79,7 @@ public class MontaHorarios {
                 for (int d = 0; d < qtdDias; d++) {
                     IloLinearNumExpr somaProf = model.linearNumExpr();
                     for (int p = 0; p < qtdProf; p++) {
-                        somaProf.addTerm(1, matrizModelo[t][h][d][p]);
+                        somaProf.addTerm(1, x[d][h][t][p]);
                     }
                     model.addEq(somaProf, 1);
                 }
@@ -93,7 +93,7 @@ public class MontaHorarios {
                 for (int p = 0; p < qtdProf; p++) {
                     IloLinearNumExpr somaProfTurmas = model.linearNumExpr();
                     for (int t = 0; t < qtdTurmas; t++) {
-                        somaProfTurmas.addTerm(1, matrizModelo[t][h][d][p]);
+                        somaProfTurmas.addTerm(1, x[d][h][t][p]);
                     }
                     model.addLe(somaProfTurmas, 1);
                 }
@@ -111,7 +111,7 @@ public class MontaHorarios {
                 for (int h = 0; h < qtdHorarios; h++) {
                     for (int d = 0; d < qtdDias; d++) {
                         for (int p = 0; p < qtdProf; p++) {
-                            if (model.getValue(matrizModelo[t][h][d][p]) == 1) {
+                            if (model.getValue(x[d][h][t][p]) == 1) {
                                 System.out.print(p + " | ");
                                 break;
                             }
@@ -121,6 +121,24 @@ public class MontaHorarios {
 
                 }
                 System.out.print("\n\n\n\n");
+            }
+
+            for (int t = 0; t < qtdTurmas; t++) {
+                for (int p = 0; p < qtdProf; p++) {
+                    System.out.println("Horarios prof: " + p);
+                    System.out.println("SEG  TER  QUA  QUI  SEX");
+                        for (int h = 0; h < qtdHorarios; h++) {
+                    for (int d = 0; d < qtdDias; d++) {
+                            if (model.getValue(x[d][h][t][p]) == 1) {
+                                System.out.print(t + " | ");
+                            } else {
+                                System.out.print("- | ");
+                            }
+                        }
+                        System.out.println("");
+                    }
+                }
+                System.out.println("\n\n\n");
             }
 
         }
